@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ config('app.name', 'Личный кабинет') }}</title>
+    <link rel="dns-prefetch" href="//fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <!-- Left Side Of Navbar -->
+                    <ul class="navbar-left">
+                        @php
+                            $networkName = isset($_COOKIE['network_name']) ? $_COOKIE['network_name'] : 'Выберите доступную сеть';
+                        @endphp
+                        {{ $networkName }}
+                    </ul>
+                    <!-- Right Side Of Navbar -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (session()->has('session_id'))
+                            <!-- Если есть сессия, то отображаем имя пользователя и кнопку "Выйти" -->
+                            @if (session()->has('user_name'))
+                                <li class="nav-item">
+                                    <span class="nav-link">{{ session('user_name') }}</span>
+                                </li>
+                            @endif
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                                 document.getElementById('logout-form').submit();">
+                                    {{ __('Выйти') }}
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        @else
+                            <!-- Если сессии нет, то отображаем кнопки "Войти" и "Регистрация" -->
+                            @if (Route::has('login'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Войти') }}</a>
+                                </li>
+                            @endif
+                        @endif
+                    </ul>
+                </div>
+        </nav>        
+        <div class="col-md-2">
+            @include('menu')
+        </div>
+        <main class="conteter">
+            @yield('content')
+        </main>
+    </div>
+</body>
+</html>
